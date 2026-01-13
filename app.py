@@ -49,26 +49,56 @@ def get_week_bounds(date_str):
 def index():
     """Dashboard / Home page"""
     entries = load_data()
+    sorted_entries = sorted(entries, key=lambda x: x["date"], reverse=True) if entries else []
 
-    # Get latest entry
-    latest = None
-    if entries:
-        sorted_entries = sorted(entries, key=lambda x: x["date"], reverse=True)
-        latest = sorted_entries[0]
-
-    # Calculate total miles this week
+    # Calculate this week's stats
     week_miles = 0
+    week_rhr_values = []
+    today = datetime.now().strftime("%Y-%m-%d")
+
     if entries:
-        today = datetime.now().strftime("%Y-%m-%d")
         monday, sunday = get_week_bounds(today)
         week_entries = [e for e in entries if monday <= e["date"] <= sunday]
         week_miles = sum(e.get("miles", 0) for e in week_entries)
+        week_rhr_values = [e.get("rhr") for e in week_entries if e.get("rhr")]
+
+    avg_rhr = round(sum(week_rhr_values) / len(week_rhr_values), 0) if week_rhr_values else None
+
+    # Get a key insight from last week
+    key_insight = None
+    if len(entries) >= 3:
+        # Simple insight based on available data
+        alcohol_entries = [e for e in entries if e.get("alcohol") is True and e.get("rpe")]
+        no_alcohol_entries = [e for e in entries if e.get("alcohol") is False and e.get("rpe")]
+
+        if len(alcohol_entries) >= 1 and len(no_alcohol_entries) >= 1:
+            avg_rpe_alcohol = sum(e["rpe"] for e in alcohol_entries) / len(alcohol_entries)
+            avg_rpe_no_alcohol = sum(e["rpe"] for e in no_alcohol_entries) / len(no_alcohol_entries)
+            diff = avg_rpe_alcohol - avg_rpe_no_alcohol
+            if diff > 0.5:
+                key_insight = f"RPE is {diff:.1f} points higher after alcohol"
+            elif diff < -0.5:
+                key_insight = f"RPE is {abs(diff):.1f} points lower after alcohol"
+
+        if not key_insight:
+            good_sleep = [e for e in entries if e.get("sleep_quality") and e["sleep_quality"] >= 7 and e.get("rpe")]
+            poor_sleep = [e for e in entries if e.get("sleep_quality") and e["sleep_quality"] <= 4 and e.get("rpe")]
+            if good_sleep and poor_sleep:
+                avg_good = sum(e["rpe"] for e in good_sleep) / len(good_sleep)
+                avg_poor = sum(e["rpe"] for e in poor_sleep) / len(poor_sleep)
+                if avg_poor - avg_good > 0.5:
+                    key_insight = f"Poor sleep increases RPE by {avg_poor - avg_good:.1f} points"
+
+        if not key_insight:
+            key_insight = "Add more entries to see insights"
 
     return render_template("index.html",
                          goal=GOAL,
+                         entries=sorted_entries,
                          entry_count=len(entries),
-                         latest=latest,
-                         week_miles=week_miles)
+                         week_miles=week_miles,
+                         avg_rhr=avg_rhr,
+                         key_insight=key_insight)
 
 
 @app.route("/add", methods=["GET", "POST"])

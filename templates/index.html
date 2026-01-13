@@ -1,53 +1,89 @@
 {% extends "base.html" %}
 
-{% block content %}
-<div class="card">
-    <div class="card-title">This Week</div>
-    <div class="card-value">{{ "%.1f"|format(week_miles) }} mi</div>
-    <div class="card-subtitle">{{ entry_count }} total entries</div>
-</div>
+{% block container_class %}wide{% endblock %}
 
-{% if latest %}
-<div class="card">
-    <div class="card-title">Latest Entry</div>
-    <div class="stats-grid">
-        <div class="stat-item">
-            <div class="stat-value">{{ latest.date[5:] }}</div>
-            <div class="stat-label">Date</div>
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-sidebar">
+        <div class="metric-pill">
+            <div class="label">Weekly Total</div>
+            <div class="value">{{ "%.1f"|format(week_miles) }} mi</div>
         </div>
-        <div class="stat-item">
-            <div class="stat-value">{{ latest.type|title }}</div>
-            <div class="stat-label">Type</div>
+
+        <div class="metric-pill">
+            <div class="label">Avg RHR (BPM)</div>
+            <div class="value">{{ avg_rhr|int if avg_rhr else '-' }}</div>
         </div>
-        {% if latest.type != 'rest' %}
-        <div class="stat-item">
-            <div class="stat-value">{{ latest.miles }}</div>
-            <div class="stat-label">Miles</div>
+
+        <div class="insight-box">
+            <div class="label">Key Insight</div>
+            <div class="text">{{ key_insight or 'Add more entries to see insights' }}</div>
         </div>
-        <div class="stat-item">
-            <div class="stat-value">{{ latest.pace or '-' }}</div>
-            <div class="stat-label">Pace</div>
+    </div>
+
+    <div class="dashboard-main">
+        <div class="activity-log">
+            <div class="activity-log-header">
+                <h2>Activity Log</h2>
+            </div>
+
+            {% if entries %}
+            <div class="activity-log-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Type</th>
+                            <th>Miles</th>
+                            <th>Pace</th>
+                            <th>HR</th>
+                            <th>RHR</th>
+                            <th>HRV</th>
+                            <th>RPE</th>
+                            <th>Sleep</th>
+                            <th>Stress</th>
+                            <th>Caff</th>
+                            <th>Alc</th>
+                            <th>Nic</th>
+                            <th>Travel</th>
+                            <th>Stretch</th>
+                            <th>Music</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in entries[:20] %}
+                        <tr>
+                            <td>{{ entry.date }}</td>
+                            <td>{{ entry.time_of_day|title }}</td>
+                            <td>{{ entry.type|title }}</td>
+                            <td>{{ entry.miles if entry.miles else '-' }}</td>
+                            <td>{{ entry.pace or '-' }}</td>
+                            <td>{{ entry.hr or '-' }}</td>
+                            <td>{{ entry.rhr or '-' }}</td>
+                            <td>{{ entry.hrv or '-' }}</td>
+                            <td>{{ entry.rpe or '-' }}</td>
+                            <td>{{ entry.sleep_quality or '-' }}</td>
+                            <td>{{ entry.stress or '-' }}</td>
+                            <td>{{ entry.caffeine or 0 }}</td>
+                            <td class="{{ 'yes' if entry.alcohol else 'no' }}">{{ 'Y' if entry.alcohol else 'N' }}</td>
+                            <td class="{{ 'yes' if entry.nicotine else 'no' }}">{{ 'Y' if entry.nicotine else 'N' }}</td>
+                            <td class="{{ 'yes' if entry.travel else 'no' }}">{{ 'Y' if entry.travel else 'N' }}</td>
+                            <td class="{{ 'yes' if entry.stretch else 'no' }}">{{ 'Y' if entry.stretch else 'N' }}</td>
+                            <td class="{{ 'yes' if entry.music else 'no' }}">{{ 'Y' if entry.music else 'N' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <h2>No entries yet</h2>
+                <p>Start tracking your training</p>
+                <a href="{{ url_for('add_entry') }}">Add Entry</a>
+            </div>
+            {% endif %}
         </div>
-        {% endif %}
-        {% if latest.rpe %}
-        <div class="stat-item">
-            <div class="stat-value">{{ latest.rpe }}/10</div>
-            <div class="stat-label">RPE</div>
-        </div>
-        {% endif %}
-        {% if latest.sleep_quality %}
-        <div class="stat-item">
-            <div class="stat-value">{{ latest.sleep_quality }}/10</div>
-            <div class="stat-label">Sleep</div>
-        </div>
-        {% endif %}
     </div>
 </div>
-{% else %}
-<div class="empty-state">
-    <h2>No entries yet</h2>
-    <p>Start tracking your training</p>
-    <a href="{{ url_for('add_entry') }}">Add Entry</a>
-</div>
-{% endif %}
 {% endblock %}

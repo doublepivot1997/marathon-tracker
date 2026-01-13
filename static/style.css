@@ -37,6 +37,157 @@ body {
     padding: 20px;
 }
 
+.container.wide {
+    max-width: 1200px;
+}
+
+/* Dashboard Layout */
+.dashboard {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+.dashboard-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.dashboard-main {
+    min-width: 0;
+}
+
+/* Metric Pills */
+.metric-pill {
+    background: var(--bg-secondary);
+    border-radius: 20px;
+    padding: 16px 20px;
+    box-shadow: 0 1px 3px var(--shadow);
+}
+
+.metric-pill .label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.metric-pill .value {
+    font-size: 28px;
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+/* Insight Box */
+.insight-box {
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    padding: 16px 20px;
+    box-shadow: 0 1px 3px var(--shadow);
+}
+
+.insight-box .label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.insight-box .text {
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Activity Log Table */
+.activity-log {
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    box-shadow: 0 1px 3px var(--shadow);
+    overflow: hidden;
+}
+
+.activity-log-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--bg-primary);
+}
+
+.activity-log-header h2 {
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.activity-log-table {
+    width: 100%;
+    overflow-x: auto;
+    display: block;
+}
+
+.activity-log-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    min-width: 800px;
+}
+
+.activity-log-table th {
+    text-align: left;
+    padding: 12px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--bg-primary);
+    white-space: nowrap;
+}
+
+.activity-log-table td {
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--bg-primary);
+    white-space: nowrap;
+}
+
+.activity-log-table tr:last-child td {
+    border-bottom: none;
+}
+
+.activity-log-table tr:hover {
+    background: var(--bg-primary);
+}
+
+.activity-log-table .yes {
+    color: var(--success);
+}
+
+.activity-log-table .no {
+    color: var(--text-tertiary);
+}
+
+@media (max-width: 900px) {
+    .dashboard {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-sidebar {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .metric-pill {
+        flex: 1;
+        min-width: 140px;
+    }
+
+    .insight-box {
+        width: 100%;
+    }
+}
+
 /* Header */
 .header {
     text-align: center;
