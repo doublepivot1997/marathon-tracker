@@ -41,6 +41,108 @@ def get_week_bounds(date_str):
     return monday.strftime("%Y-%m-%d"), sunday.strftime("%Y-%m-%d")
 
 
+def get_last_7_days_entries(entries):
+    """Get entries from the last 7 days"""
+    today = datetime.now()
+    seven_days_ago = (today - timedelta(days=7)).strftime("%Y-%m-%d")
+    today_str = today.strftime("%Y-%m-%d")
+    return [e for e in entries if seven_days_ago <= e.get("date", "") <= today_str]
+
+
+def simple_linear_regression(x_values, y_values):
+    """Calculate simple linear regression coefficients and correlation"""
+    n = len(x_values)
+    if n < 3:
+        return None
+
+    # Calculate means
+    x_mean = sum(x_values) / n
+    y_mean = sum(y_values) / n
+
+    # Calculate slope and correlation
+    numerator = sum((x - x_mean) * (y - y_mean) for x, y in zip(x_values, y_values))
+    x_variance = sum((x - x_mean) ** 2 for x in x_values)
+    y_variance = sum((y - y_mean) ** 2 for y in y_values)
+
+    if x_variance == 0 or y_variance == 0:
+        return None
+
+    slope = numerator / x_variance
+    correlation = numerator / (x_variance ** 0.5 * y_variance ** 0.5)
+
+    return {
+        "slope": slope,
+        "correlation": correlation,
+        "r_squared": correlation ** 2
+    }
+
+
+def generate_regression_insight(entries):
+    """Generate key insight using regression analysis on last 7 days data"""
+    recent_entries = get_last_7_days_entries(entries)
+
+    if len(recent_entries) < 3:
+        return None
+
+    # Define factors to analyze against RPE
+    # Each tuple: (factor_key, factor_name, is_boolean, direction_text)
+    factors = [
+        ("sleep_quality", "sleep quality", False, ("improves", "hurts")),
+        ("stress", "stress", False, ("helps", "increases")),
+        ("caffeine", "caffeine", False, ("helps", "increases")),
+        ("alcohol", "alcohol", True, ("lowers", "raises")),
+        ("nicotine", "nicotine", True, ("lowers", "raises")),
+        ("travel", "travel", True, ("helps", "hurts")),
+        ("stretch", "stretching", True, ("helps", "hurts")),
+        ("hrv", "HRV", False, ("correlates with higher", "correlates with lower")),
+        ("rhr", "resting HR", False, ("correlates with lower", "correlates with higher")),
+    ]
+
+    best_insight = None
+    best_r_squared = 0
+
+    # Get entries with RPE data
+    rpe_entries = [e for e in recent_entries if e.get("rpe") is not None]
+    if len(rpe_entries) < 3:
+        return None
+
+    for factor_key, factor_name, is_boolean, direction in factors:
+        # Build x and y arrays
+        x_values = []
+        y_values = []
+
+        for entry in rpe_entries:
+            factor_val = entry.get(factor_key)
+            if factor_val is not None:
+                if is_boolean:
+                    x_values.append(1 if factor_val else 0)
+                else:
+                    x_values.append(float(factor_val))
+                y_values.append(float(entry["rpe"]))
+
+        if len(x_values) < 3:
+            continue
+
+        result = simple_linear_regression(x_values, y_values)
+        if result and result["r_squared"] > best_r_squared and result["r_squared"] > 0.15:
+            best_r_squared = result["r_squared"]
+            slope = result["slope"]
+
+            # Generate insight text
+            if is_boolean:
+                if slope > 0:
+                    best_insight = f"{factor_name.title()} {direction[1]} your RPE"
+                else:
+                    best_insight = f"{factor_name.title()} {direction[0]} your RPE"
+            else:
+                if slope > 0:
+                    best_insight = f"Higher {factor_name} {direction[1]} RPE"
+                else:
+                    best_insight = f"Higher {factor_name} {direction[0]} RPE"
+
+    return best_insight
+
+
 # =============================================================================
 # ROUTES
 # =============================================================================
@@ -64,33 +166,10 @@ def index():
 
     avg_rhr = round(sum(week_rhr_values) / len(week_rhr_values), 0) if week_rhr_values else None
 
-    # Get a key insight from last week
-    key_insight = None
-    if len(entries) >= 3:
-        # Simple insight based on available data
-        alcohol_entries = [e for e in entries if e.get("alcohol") is True and e.get("rpe")]
-        no_alcohol_entries = [e for e in entries if e.get("alcohol") is False and e.get("rpe")]
-
-        if len(alcohol_entries) >= 1 and len(no_alcohol_entries) >= 1:
-            avg_rpe_alcohol = sum(e["rpe"] for e in alcohol_entries) / len(alcohol_entries)
-            avg_rpe_no_alcohol = sum(e["rpe"] for e in no_alcohol_entries) / len(no_alcohol_entries)
-            diff = avg_rpe_alcohol - avg_rpe_no_alcohol
-            if diff > 0.5:
-                key_insight = f"RPE is {diff:.1f} points higher after alcohol"
-            elif diff < -0.5:
-                key_insight = f"RPE is {abs(diff):.1f} points lower after alcohol"
-
-        if not key_insight:
-            good_sleep = [e for e in entries if e.get("sleep_quality") and e["sleep_quality"] >= 7 and e.get("rpe")]
-            poor_sleep = [e for e in entries if e.get("sleep_quality") and e["sleep_quality"] <= 4 and e.get("rpe")]
-            if good_sleep and poor_sleep:
-                avg_good = sum(e["rpe"] for e in good_sleep) / len(good_sleep)
-                avg_poor = sum(e["rpe"] for e in poor_sleep) / len(poor_sleep)
-                if avg_poor - avg_good > 0.5:
-                    key_insight = f"Poor sleep increases RPE by {avg_poor - avg_good:.1f} points"
-
-        if not key_insight:
-            key_insight = "Add more entries to see insights"
+    # Generate key insight using regression analysis on last 7 days
+    key_insight = generate_regression_insight(entries)
+    if not key_insight:
+        key_insight = "run more for advice"
 
     return render_template("index.html",
                          goal=GOAL,
