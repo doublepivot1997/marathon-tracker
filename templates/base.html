@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training Journal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Training Journal</h1>
+            <p class="goal">{{ goal if goal else "2:32:00 Boston" }}</p>
+        </header>
+
+        <nav class="nav">
+            <a href="{{ url_for('index') }}" class="{{ 'active' if request.endpoint == 'index' else '' }}">Home</a>
+            <a href="{{ url_for('add_entry') }}" class="{{ 'active' if request.endpoint == 'add_entry' else '' }}">Add</a>
+            <a href="{{ url_for('history') }}" class="{{ 'active' if request.endpoint == 'history' else '' }}">History</a>
+            <a href="{{ url_for('weekly') }}" class="{{ 'active' if request.endpoint == 'weekly' else '' }}">Weekly</a>
+            <a href="{{ url_for('insights') }}" class="{{ 'active' if request.endpoint == 'insights' else '' }}">Insights</a>
+        </nav>
+
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if has_data %}
+
+{% if results.factors %}
+<div class="insight-card">
+    <div class="insight-title">Factor Impact</div>
+    {% for factor in results.factors %}
+    <div class="insight-item">
+        <strong>{{ factor.name }}</strong>
+        {% for impact in factor.impacts %}
+        <div style="margin-left: 12px; margin-top: 4px; color: var(--text-secondary);">
+            {{ impact.metric }}:
+            <span class="{{ 'impact-negative' if 'negative' in impact.impact else 'impact-positive' if 'positive' in impact.impact else 'impact-neutral' }}">
+                {{ impact.impact }}
+            </span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="insight-card">
+    <div class="insight-title">Sleep Quality Impact</div>
+    {% for item in results.sleep %}
+    <div class="insight-item">{{ item.text }}</div>
+    {% endfor %}
+</div>
+
+<div class="insight-card">
+    <div class="insight-title">Caffeine Impact</div>
+    {% for item in results.caffeine %}
+    <div class="insight-item">{{ item.text }}</div>
+    {% endfor %}
+</div>
+
+{% else %}
+<div class="empty-state">
+    <h2>Not enough data</h2>
+    <p>Need {{ needed }} more entries for insights</p>
+    <a href="{{ url_for('add_entry') }}">Add Entry</a>
+</div>
+{% endif %}
+{% endblock %}

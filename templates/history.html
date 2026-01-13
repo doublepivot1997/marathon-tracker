@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if entries %}
+<div class="entry-list">
+    {% for entry in entries %}
+    <a href="{{ url_for('view_entry', index=loop.index0) }}" class="entry-item">
+        <span class="entry-date">{{ entry.date }}</span>
+        <span class="entry-details">
+            {% if entry.type != 'rest' %}
+            <span>{{ entry.miles }} mi</span>
+            <span>{{ entry.pace or '-' }}</span>
+            {% endif %}
+        </span>
+        <span class="entry-type {{ entry.type }}">{{ entry.type }}</span>
+        <span class="entry-arrow">›</span>
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <h2>No entries yet</h2>
+    <p>Start tracking your training</p>
+    <a href="{{ url_for('add_entry') }}">Add Entry</a>
+</div>
+{% endif %}
+{% endblock %}

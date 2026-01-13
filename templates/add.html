@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form method="POST" action="{{ url_for('add_entry') }}">
+
+    <div class="form-section">
+        <div class="form-section-title">Basic Info</div>
+        <div class="form-group">
+            <div class="form-row">
+                <label for="date">Date</label>
+                <input type="date" id="date" name="date" value="{{ today }}" required>
+            </div>
+            <div class="form-row">
+                <label for="time_of_day">Time of Day</label>
+                <select id="time_of_day" name="time_of_day" required>
+                    <option value="am">AM</option>
+                    <option value="afternoon">Afternoon</option>
+                    <option value="pm">PM</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label for="type">Type</label>
+                <select id="type" name="type" required onchange="toggleRunFields()">
+                    <option value="easy">Easy</option>
+                    <option value="workout">Workout</option>
+                    <option value="rest">Rest</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section" id="run-fields">
+        <div class="form-section-title">Run Data</div>
+        <div class="form-group">
+            <div class="form-row">
+                <label for="miles">Miles</label>
+                <input type="number" id="miles" name="miles" step="0.1" placeholder="0.0">
+            </div>
+            <div class="form-row">
+                <label for="pace">Pace (M:SS)</label>
+                <input type="text" id="pace" name="pace" placeholder="7:30">
+            </div>
+            <div class="form-row">
+                <label for="hr">Avg HR</label>
+                <input type="number" id="hr" name="hr" placeholder="Optional">
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="form-section-title">Device Metrics</div>
+        <div class="form-group">
+            <div class="form-row">
+                <label for="rhr">Resting HR</label>
+                <input type="number" id="rhr" name="rhr" placeholder="Optional">
+            </div>
+            <div class="form-row">
+                <label for="hrv">HRV</label>
+                <input type="number" id="hrv" name="hrv" placeholder="Optional">
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="form-section-title">Subjective (1-10)</div>
+        <div class="form-group">
+            <div class="form-row">
+                <label for="rpe">RPE (Effort)</label>
+                <input type="number" id="rpe" name="rpe" min="1" max="10" placeholder="1-10">
+            </div>
+            <div class="form-row">
+                <label for="sleep_quality">Sleep Quality</label>
+                <input type="number" id="sleep_quality" name="sleep_quality" min="1" max="10" placeholder="1-10">
+            </div>
+            <div class="form-row">
+                <label for="stress">Stress Level</label>
+                <input type="number" id="stress" name="stress" min="1" max="10" placeholder="1-10">
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="form-section-title">Lifestyle</div>
+        <div class="form-group">
+            <div class="form-row">
+                <label for="caffeine">Caffeine (cups)</label>
+                <input type="number" id="caffeine" name="caffeine" min="0" placeholder="0">
+            </div>
+            <div class="form-row">
+                <label>Alcohol Yesterday</label>
+                <div class="toggle-group">
+                    <input type="radio" id="alcohol_n" name="alcohol" value="n" checked style="display:none">
+                    <label for="alcohol_n" class="toggle-btn active" onclick="toggleBtn(this, 'alcohol')">No</label>
+                    <input type="radio" id="alcohol_y" name="alcohol" value="y" style="display:none">
+                    <label for="alcohol_y" class="toggle-btn" onclick="toggleBtn(this, 'alcohol')">Yes</label>
+                </div>
+            </div>
+            <div class="form-row">
+                <label>Nicotine Yesterday</label>
+                <div class="toggle-group">
+                    <input type="radio" id="nicotine_n" name="nicotine" value="n" checked style="display:none">
+                    <label for="nicotine_n" class="toggle-btn active" onclick="toggleBtn(this, 'nicotine')">No</label>
+                    <input type="radio" id="nicotine_y" name="nicotine" value="y" style="display:none">
+                    <label for="nicotine_y" class="toggle-btn" onclick="toggleBtn(this, 'nicotine')">Yes</label>
+                </div>
+            </div>
+            <div class="form-row">
+                <label>Travel</label>
+                <div class="toggle-group">
+                    <input type="radio" id="travel_n" name="travel" value="n" checked style="display:none">
+                    <label for="travel_n" class="toggle-btn active" onclick="toggleBtn(this, 'travel')">No</label>
+                    <input type="radio" id="travel_y" name="travel" value="y" style="display:none">
+                    <label for="travel_y" class="toggle-btn" onclick="toggleBtn(this, 'travel')">Yes</label>
+                </div>
+            </div>
+            <div class="form-row">
+                <label>Stretched</label>
+                <div class="toggle-group">
+                    <input type="radio" id="stretch_n" name="stretch" value="n" checked style="display:none">
+                    <label for="stretch_n" class="toggle-btn active" onclick="toggleBtn(this, 'stretch')">No</label>
+                    <input type="radio" id="stretch_y" name="stretch" value="y" style="display:none">
+                    <label for="stretch_y" class="toggle-btn" onclick="toggleBtn(this, 'stretch')">Yes</label>
+                </div>
+            </div>
+            <div class="form-row">
+                <label>Music</label>
+                <div class="toggle-group">
+                    <input type="radio" id="music_n" name="music" value="n" checked style="display:none">
+                    <label for="music_n" class="toggle-btn active" onclick="toggleBtn(this, 'music')">No</label>
+                    <input type="radio" id="music_y" name="music" value="y" style="display:none">
+                    <label for="music_y" class="toggle-btn" onclick="toggleBtn(this, 'music')">Yes</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="submit-btn">Save Entry</button>
+</form>
+
+<script>
+function toggleRunFields() {
+    const type = document.getElementById('type').value;
+    const runFields = document.getElementById('run-fields');
+    runFields.style.display = type === 'rest' ? 'none' : 'block';
+}
+
+function toggleBtn(clicked, groupName) {
+    const group = clicked.parentElement;
+    group.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('active'));
+    clicked.classList.add('active');
+
+    const value = clicked.textContent === 'Yes' ? 'y' : 'n';
+    document.getElementById(groupName + '_' + value).checked = true;
+}
+</script>
+{% endblock %}

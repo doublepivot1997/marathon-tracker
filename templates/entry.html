@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block content %}
+<a href="{{ url_for('history') }}" class="back-link">← Back to History</a>
+
+<div class="card">
+    <div class="card-title">{{ entry.date }}</div>
+    <div class="detail-section">
+        <div class="detail-row">
+            <span class="detail-label">Time of Day</span>
+            <span class="detail-value">{{ entry.time_of_day|title }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Type</span>
+            <span class="detail-value">{{ entry.type|title }}</span>
+        </div>
+    </div>
+</div>
+
+{% if entry.type != 'rest' %}
+<div class="card">
+    <div class="card-title">Run Data</div>
+    <div class="detail-section">
+        <div class="detail-row">
+            <span class="detail-label">Miles</span>
+            <span class="detail-value">{{ entry.miles }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Pace</span>
+            <span class="detail-value">{{ entry.pace or '-' }}/mile</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Avg HR</span>
+            <span class="detail-value">{{ entry.hr or '-' }}{% if entry.hr %} bpm{% endif %}</span>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="card-title">Device Metrics</div>
+    <div class="detail-section">
+        <div class="detail-row">
+            <span class="detail-label">Resting HR</span>
+            <span class="detail-value">{{ entry.rhr or '-' }}{% if entry.rhr %} bpm{% endif %}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">HRV</span>
+            <span class="detail-value">{{ entry.hrv or '-' }}</span>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-title">Subjective</div>
+    <div class="detail-section">
+        <div class="detail-row">
+            <span class="detail-label">RPE</span>
+            <span class="detail-value">{{ entry.rpe or '-' }}{% if entry.rpe %}/10{% endif %}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Sleep Quality</span>
+            <span class="detail-value">{{ entry.sleep_quality or '-' }}{% if entry.sleep_quality %}/10{% endif %}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Stress</span>
+            <span class="detail-value">{{ entry.stress or '-' }}{% if entry.stress %}/10{% endif %}</span>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-title">Lifestyle</div>
+    <div class="detail-section">
+        <div class="detail-row">
+            <span class="detail-label">Caffeine</span>
+            <span class="detail-value">{{ entry.caffeine or 0 }} cups</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Alcohol</span>
+            <span class="detail-value">{{ 'Yes' if entry.alcohol else 'No' }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Nicotine</span>
+            <span class="detail-value">{{ 'Yes' if entry.nicotine else 'No' }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Travel</span>
+            <span class="detail-value">{{ 'Yes' if entry.travel else 'No' }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Stretched</span>
+            <span class="detail-value">{{ 'Yes' if entry.stretch else 'No' }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Music</span>
+            <span class="detail-value">{{ 'Yes' if entry.music else 'No' }}</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

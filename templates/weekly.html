@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if weeks %}
+<div class="week-selector">
+    {% for monday, sunday in weeks[:8] %}
+    <a href="{{ url_for('weekly', week=loop.index0) }}" class="week-btn {{ 'active' if loop.index0 == selected else '' }}">
+        {{ monday[5:] }} - {{ sunday[5:] }}
+    </a>
+    {% endfor %}
+</div>
+
+{% if stats %}
+<div class="card">
+    <div class="card-title">Week of {{ stats.monday }}</div>
+    <div class="card-value">{{ "%.1f"|format(stats.total_miles) }} mi</div>
+    <div class="card-subtitle">{{ stats.num_runs }} runs, {{ stats.rest_days }} rest days</div>
+</div>
+
+<div class="card">
+    <div class="card-title">Averages</div>
+    <div class="stats-grid">
+        {% if stats.avg_pace %}
+        <div class="stat-item">
+            <div class="stat-value">{{ stats.avg_pace }}</div>
+            <div class="stat-label">Pace</div>
+        </div>
+        {% endif %}
+        {% if stats.avg_hr %}
+        <div class="stat-item">
+            <div class="stat-value">{{ stats.avg_hr|int }}</div>
+            <div class="stat-label">Avg HR</div>
+        </div>
+        {% endif %}
+        {% if stats.avg_rhr %}
+        <div class="stat-item">
+            <div class="stat-value">{{ stats.avg_rhr|int }}</div>
+            <div class="stat-label">RHR</div>
+        </div>
+        {% endif %}
+        {% if stats.avg_hrv %}
+        <div class="stat-item">
+            <div class="stat-value">{{ stats.avg_hrv|int }}</div>
+            <div class="stat-label">HRV</div>
+        </div>
+        {% endif %}
+        {% if stats.avg_rpe %}
+        <div class="stat-item">
+            <div class="stat-value">{{ stats.avg_rpe }}</div>
+            <div class="stat-label">RPE</div>
+        </div>
+        {% endif %}
+        {% if stats.avg_sleep %}
+        <div class="stat-item">
+            <div class="stat-value">{{ stats.avg_sleep }}</div>
+            <div class="stat-label">Sleep</div>
+        </div>
+        {% endif %}
+        {% if stats.avg_stress %}
+        <div class="stat-item">
+            <div class="stat-value">{{ stats.avg_stress }}</div>
+            <div class="stat-label">Stress</div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+{% else %}
+<div class="empty-state">
+    <h2>No data yet</h2>
+    <p>Add entries to see weekly summaries</p>
+    <a href="{{ url_for('add_entry') }}">Add Entry</a>
+</div>
+{% endif %}
+{% endblock %}

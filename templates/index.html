@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <div class="card-title">This Week</div>
+    <div class="card-value">{{ "%.1f"|format(week_miles) }} mi</div>
+    <div class="card-subtitle">{{ entry_count }} total entries</div>
+</div>
+
+{% if latest %}
+<div class="card">
+    <div class="card-title">Latest Entry</div>
+    <div class="stats-grid">
+        <div class="stat-item">
+            <div class="stat-value">{{ latest.date[5:] }}</div>
+            <div class="stat-label">Date</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">{{ latest.type|title }}</div>
+            <div class="stat-label">Type</div>
+        </div>
+        {% if latest.type != 'rest' %}
+        <div class="stat-item">
+            <div class="stat-value">{{ latest.miles }}</div>
+            <div class="stat-label">Miles</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">{{ latest.pace or '-' }}</div>
+            <div class="stat-label">Pace</div>
+        </div>
+        {% endif %}
+        {% if latest.rpe %}
+        <div class="stat-item">
+            <div class="stat-value">{{ latest.rpe }}/10</div>
+            <div class="stat-label">RPE</div>
+        </div>
+        {% endif %}
+        {% if latest.sleep_quality %}
+        <div class="stat-item">
+            <div class="stat-value">{{ latest.sleep_quality }}/10</div>
+            <div class="stat-label">Sleep</div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% else %}
+<div class="empty-state">
+    <h2>No entries yet</h2>
+    <p>Start tracking your training</p>
+    <a href="{{ url_for('add_entry') }}">Add Entry</a>
+</div>
+{% endif %}
+{% endblock %}
