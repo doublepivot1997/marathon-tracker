@@ -8,7 +8,7 @@
     <div class="detail-section">
         <div class="detail-row">
             <span class="detail-label">Time of Day</span>
-            <span class="detail-value">{{ entry.time_of_day|title }}</span>
+            <span class="detail-value">{{ entry.time|title }}</span>
         </div>
         <div class="detail-row">
             <span class="detail-label">Type</span>
@@ -60,7 +60,7 @@
         </div>
         <div class="detail-row">
             <span class="detail-label">Sleep Quality</span>
-            <span class="detail-value">{{ entry.sleep_quality or '-' }}{% if entry.sleep_quality %}/10{% endif %}</span>
+            <span class="detail-value">{{ entry.sleep or '-' }}{% if entry.sleep %}/10{% endif %}</span>
         </div>
         <div class="detail-row">
             <span class="detail-label">Stress</span>

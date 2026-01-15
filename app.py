@@ -87,7 +87,7 @@ def generate_regression_insight(entries):
     # Define factors to analyze against RPE
     # Each tuple: (factor_key, factor_name, is_boolean, direction_text)
     factors = [
-        ("sleep_quality", "sleep quality", False, ("improves", "hurts")),
+        ("sleep", "sleep quality", False, ("improves", "hurts")),
         ("stress", "stress", False, ("helps", "increases")),
         ("caffeine", "caffeine", False, ("helps", "increases")),
         ("alcohol", "alcohol", True, ("lowers", "raises")),
@@ -188,7 +188,7 @@ def add_entry():
 
         # Basic info
         entry["date"] = request.form.get("date")
-        entry["time_of_day"] = request.form.get("time_of_day")
+        entry["time"] = request.form.get("time")
         entry["type"] = request.form.get("type")
 
         # Run data
@@ -212,8 +212,8 @@ def add_entry():
         # Subjective scores
         rpe = request.form.get("rpe")
         entry["rpe"] = int(rpe) if rpe else None
-        sleep = request.form.get("sleep_quality")
-        entry["sleep_quality"] = int(sleep) if sleep else None
+        sleep = request.form.get("sleep")
+        entry["sleep"] = int(sleep) if sleep else None
         stress = request.form.get("stress")
         entry["stress"] = int(stress) if stress else None
 
@@ -225,9 +225,6 @@ def add_entry():
         entry["travel"] = request.form.get("travel") == "y"
         entry["stretch"] = request.form.get("stretch") == "y"
         entry["music"] = request.form.get("music") == "y"
-
-        # Timestamp
-        entry["created_at"] = datetime.now().isoformat()
 
         # Save
         entries = load_data()
@@ -312,7 +309,7 @@ def weekly():
     stats["avg_hrv"] = avg("hrv", week_entries)
     stats["avg_hr"] = avg("hr", run_entries)
     stats["avg_rpe"] = avg("rpe", run_entries)
-    stats["avg_sleep"] = avg("sleep_quality", week_entries)
+    stats["avg_sleep"] = avg("sleep", week_entries)
     stats["avg_stress"] = avg("stress", week_entries)
 
     # Average pace
@@ -423,8 +420,8 @@ def calculate_impact(entries, factor_key, metric_key, higher_is_worse):
 
 def analyze_sleep_impact(entries):
     """Analyze how sleep quality affects metrics"""
-    good_sleep = [e for e in entries if e.get("sleep_quality") and e["sleep_quality"] >= 7]
-    poor_sleep = [e for e in entries if e.get("sleep_quality") and e["sleep_quality"] <= 4]
+    good_sleep = [e for e in entries if e.get("sleep") and e["sleep"] >= 7]
+    poor_sleep = [e for e in entries if e.get("sleep") and e["sleep"] <= 4]
 
     if len(good_sleep) < 2 or len(poor_sleep) < 2:
         return [{"text": "Not enough varied sleep data yet"}]

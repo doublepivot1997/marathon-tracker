@@ -55,7 +55,7 @@
                         {% for entry in entries[:20] %}
                         <tr>
                             <td>{{ entry.date }}</td>
-                            <td>{{ entry.time_of_day|title }}</td>
+                            <td>{{ entry.time|title }}</td>
                             <td>{{ entry.type|title }}</td>
                             <td>{{ entry.miles if entry.miles else '-' }}</td>
                             <td>{{ entry.pace or '-' }}</td>
@@ -63,7 +63,7 @@
                             <td>{{ entry.rhr or '-' }}</td>
                             <td>{{ entry.hrv or '-' }}</td>
                             <td>{{ entry.rpe or '-' }}</td>
-                            <td>{{ entry.sleep_quality or '-' }}</td>
+                            <td>{{ entry.sleep or '-' }}</td>
                             <td>{{ entry.stress or '-' }}</td>
                             <td>{{ entry.caffeine or 0 }}</td>
                             <td class="{{ 'yes' if entry.alcohol else 'no' }}">{{ 'Y' if entry.alcohol else 'N' }}</td>

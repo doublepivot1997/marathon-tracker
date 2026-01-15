@@ -123,7 +123,7 @@ def add_entry():
     # Basic info
     print("\n-- Basic Info --")
     entry["date"] = get_input("Date (YYYY-MM-DD): ", "date")
-    entry["time_of_day"] = get_input("Time of day (am/afternoon/pm): ", options=["am", "afternoon", "pm"])
+    entry["time"] = get_input("Time of day (am/afternoon/pm): ", options=["am", "afternoon", "pm"])
     entry["type"] = get_input("Type (workout/easy/rest): ", options=["workout", "easy", "rest"])
 
     # Run data (skip if rest day)
@@ -145,7 +145,7 @@ def add_entry():
     # Subjective scores
     print("\n-- Subjective Scores (1-10) --")
     entry["rpe"] = get_input("RPE (effort level): ", "rating", required=False)
-    entry["sleep_quality"] = get_input("Sleep quality: ", "rating", required=False)
+    entry["sleep"] = get_input("Sleep quality: ", "rating", required=False)
     entry["stress"] = get_input("Stress level: ", "rating", required=False)
 
     # Lifestyle factors
@@ -156,9 +156,6 @@ def add_entry():
     entry["travel"] = get_input("Travel (y/n): ", "yn", required=False)
     entry["stretch"] = get_input("Stretched (y/n): ", "yn", required=False)
     entry["music"] = get_input("Music (y/n): ", "yn", required=False)
-
-    # Add timestamp for sorting
-    entry["created_at"] = datetime.now().isoformat()
 
     # Save
     entries.append(entry)
@@ -208,7 +205,7 @@ def view_single_entry(entry):
     print("-" * 40)
 
     print(f"\n  Date:         {entry['date']}")
-    print(f"  Time of day:  {entry['time_of_day']}")
+    print(f"  Time of day:  {entry['time']}")
     print(f"  Type:         {entry['type']}")
 
     if entry["type"] != "rest":
@@ -221,7 +218,7 @@ def view_single_entry(entry):
     print(f"  HRV:          {entry.get('hrv', '-') or '-'}")
 
     print(f"\n  RPE:          {entry.get('rpe', '-') or '-'}/10")
-    print(f"  Sleep:        {entry.get('sleep_quality', '-') or '-'}/10")
+    print(f"  Sleep:        {entry.get('sleep', '-') or '-'}/10")
     print(f"  Stress:       {entry.get('stress', '-') or '-'}/10")
 
     print(f"\n  Caffeine:     {entry.get('caffeine', '-') or '-'} cups")
@@ -310,7 +307,7 @@ def show_week_stats(week_tuple):
     avg_hrv = avg("hrv", week_entries)
     avg_hr = avg("hr")
     avg_rpe = avg("rpe")
-    avg_sleep = avg("sleep_quality", week_entries)
+    avg_sleep = avg("sleep", week_entries)
     avg_stress = avg("stress", week_entries)
 
     # Calculate average pace
@@ -467,8 +464,8 @@ def analyze_sleep_impact():
     results = []
 
     # Compare good sleep (7-10) vs poor sleep (1-4)
-    good_sleep = [e for e in entries if e.get("sleep_quality") and e["sleep_quality"] >= 7]
-    poor_sleep = [e for e in entries if e.get("sleep_quality") and e["sleep_quality"] <= 4]
+    good_sleep = [e for e in entries if e.get("sleep") and e["sleep"] >= 7]
+    poor_sleep = [e for e in entries if e.get("sleep") and e["sleep"] <= 4]
 
     if len(good_sleep) < 2 or len(poor_sleep) < 2:
         return ["Not enough data (need entries with varied sleep quality)"]
